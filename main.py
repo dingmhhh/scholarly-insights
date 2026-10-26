@@ -1,7 +1,9 @@
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from typing import Literal
 from datetime import date
+import requests
+from search import search_articles as run_article_search
 
 app = FastAPI(
     title="Scholarly Insight API",
@@ -18,35 +20,43 @@ def health_check():
     return {"status": "ok"}
 
 @app.get("/articles/search")
-def search_articles(
+@app.get("/articles/search")
+def search_articles_endpoint(
     keyword: str | None = None,
     author: str | None = None,
     category: str | None = None,
-    date_from: date | None = Query(None, description="Start date in YYYY-MM-DD format"),
-    date_to: date | None = Query(None, description="End date in YYYY-MM-DD format"),
-    start: int = Query(0, ge=0, description="Starting index for pagination"),
-    max_results: int = Query(10, ge=1, le=100, description="Maximum number of results to return"),
+    date_from: date | None = Query(None),
+    date_to: date | None = Query(None),
+    start: int = Query(0, ge=0),
+    max_results: int = Query(10, ge=1, le=100),
     sort_by: Literal[
         "relevance", "submittedDate", "lastUpdatedDate"
-        ] = Query("relevance", description="Sort results by relevance or date")
+    ] = "relevance"
 ):
-    """
-    Search for scholarly articles using optional filters.
+    """Search arXiv articles using optional filters."""
+    try:
+        result = run_article_search(
+            keyword=keyword,
+            author=author,
+            category=category,
+            date_from=date_from,
+            date_to=date_to,
+            start=start,
+            max_results=max_results,
+            sort_by=sort_by
+        )
 
-    Currently returns a placeholder response.
-    The search module will be integrated separately. 
-    """
-    # Placeholder for actual search logic
-    return {
-        "query": {
-            "keyword": keyword,
-            "author": author,
-            "category": category,
-            "date_from": date_from,
-            "date_to": date_to,
-            "start": start,
-            "max_results": max_results,
-            "sort_by": sort_by
-        },
-        "articles": []  # Placeholder for actual search results
-    }
+        return result
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc)
+        ) from exc
+
+    except requests.RequestException as exc:
+        print(f"arXiv API error: {type(exc).__name__}: {exc}")
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to retrieve data from arXiv"
+        ) from exc
