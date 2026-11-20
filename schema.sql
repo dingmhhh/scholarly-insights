@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS favorites (
     favorite_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     arxiv_id TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     UNIQUE (user_id, arxiv_id)
 );
 
@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE TABLE IF NOT EXISTS discussions (
     discussion_id INTEGER PRIMARY KEY AUTOINCREMENT,
     arxiv_id TEXT NOT NULL,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER,
+    author_name TEXT NOT NULL DEFAULT 'Guest',
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)

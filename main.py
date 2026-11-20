@@ -1,25 +1,50 @@
-
 from fastapi import FastAPI, Query, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
 from typing import Literal
 from datetime import date
+from pathlib import Path
 import requests
+
 from search import search_articles as run_article_search
+from arxiv_client import fetch_articles
+from database import get_connection, intialize_database
 
 app = FastAPI(
     title="Scholarly Insight API",
-    description="Backend for scholarly article search",
-    version="0.1.0"
+    description="Backend for scholarly article search and discussion",
+    version="0.2.0"
 )
+
+BASE_DIR = Path(__file__).resolve().parent
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+
+
+class DiscussionCreate(BaseModel):
+    arxiv_id: str = Field(min_length=1, max_length=100)
+    author_name: str = Field(min_length=1, max_length=80)
+    content: str = Field(min_length=1, max_length=3000)
+
+
+@app.on_event("startup")
+def startup_event():
+    intialize_database()
+
 
 @app.get("/")
 def home():
-    return {"message": "Welcome to Scholarly Insight"}
+    return FileResponse(BASE_DIR / "templates" / "index.html")
+
+@app.get("/login")
+def login_page():
+    return FileResponse(BASE_DIR / "templates" / "login.html")
 
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
-@app.get("/articles/search")
+
 @app.get("/articles/search")
 def search_articles_endpoint(
     keyword: str | None = None,
@@ -33,9 +58,8 @@ def search_articles_endpoint(
         "relevance", "submittedDate", "lastUpdatedDate"
     ] = "relevance"
 ):
-    """Search arXiv articles using optional filters."""
     try:
-        result = run_article_search(
+        return run_article_search(
             keyword=keyword,
             author=author,
             category=category,
@@ -45,18 +69,76 @@ def search_articles_endpoint(
             max_results=max_results,
             sort_by=sort_by
         )
-
-        return result
-
     except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=str(exc)
-        ) from exc
-
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except requests.RequestException as exc:
-        print(f"arXiv API error: {type(exc).__name__}: {exc}")
         raise HTTPException(
             status_code=502,
             detail="Failed to retrieve data from arXiv"
         ) from exc
+
+
+@app.get("/articles/{article_id}")
+def get_article(article_id: str):
+    try:
+        result = fetch_articles(
+            search_query=f"id:{article_id}",
+            max_results=1
+        )
+        if not result["articles"]:
+            raise HTTPException(status_code=404, detail="Article not found")
+        return result["articles"][0]
+    except requests.RequestException as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="Failed to retrieve article from arXiv"
+        ) from exc
+
+
+@app.get("/articles/{article_id}/discussions")
+def get_discussions(article_id: str):
+    conn = get_connection()
+    try:
+        rows = conn.execute(
+            """SELECT discussion_id, arxiv_id, author_name, content, created_at
+               FROM discussions
+               WHERE arxiv_id = ?
+               ORDER BY created_at DESC""",
+            (article_id,)
+        ).fetchall()
+        return {"discussions": [
+            {
+                "discussion_id": row[0],
+                "arxiv_id": row[1],
+                "author_name": row[2],
+                "content": row[3],
+                "created_at": row[4]
+            } for row in rows
+        ]}
+    finally:
+        conn.close()
+
+
+@app.post("/articles/{article_id}/discussions", status_code=201)
+def create_discussion(article_id: str, discussion: DiscussionCreate):
+    if discussion.arxiv_id != article_id:
+        raise HTTPException(status_code=400, detail="Article ID mismatch")
+
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """INSERT INTO discussions (arxiv_id, author_name, content)
+               VALUES (?, ?, ?)""",
+            (
+                article_id,
+                discussion.author_name.strip(),
+                discussion.content.strip()
+            )
+        )
+        conn.commit()
+        return {
+            "discussion_id": cursor.lastrowid,
+            "message": "Discussion posted successfully"
+        }
+    finally:
+        conn.close()
