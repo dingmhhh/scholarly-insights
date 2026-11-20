@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover, read and discuss scholarly research.">
+    <title>Scholarly Insights | Research Discovery</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="/" aria-label="Scholarly Insights home">
+            <span class="brand-mark">S</span>
+            <span>scholarly<span class="brand-light">insights</span></span>
+        </a>
+        <nav class="main-nav">
+            <a class="active" href="#discover">Discover</a>
+            <a href="#community">Community</a>
+        </nav>
+        <div class="auth-controls" aria-label="Account controls">
+            <a class="header-link" href="#discover">Explore research <span>↗</span></a>
+            <a id="login-btn" href="/login" class="button button-primary">
+                Log in
+            </a>
+            <span id="user-email" hidden aria-live="polite"></span>
+            <button id="logout-btn" class="button button-outline" type="button" hidden>Log out</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="discover">
+            <div class="hero-inner">
+                <div class="eyebrow"><span class="eyebrow-line"></span> THE RESEARCH DISCOVERY PLATFORM</div>
+                <h1>Ideas worth exploring.<br><em>Knowledge worth sharing.</em></h1>
+                <p class="hero-copy">Search millions of scholarly papers, follow emerging ideas, and exchange perspectives with a curious research community.</p>
+                <div class="search-panel">
+                    <label class="sr-only" for="keyword">Search scholarly articles</label>
+                    <span class="search-icon">⌕</span>
+                    <input id="keyword" type="search" placeholder="Search topics, keywords, or research questions...">
+                    <button id="search-button" class="button button-primary">Search papers <span>→</span></button>
+                </div>
+                <div class="popular-searches">
+                    <span>Popular:</span>
+                    <button data-query="large language models">Large language models</button>
+                    <button data-query="climate change">Climate change</button>
+                    <button data-query="quantum computing">Quantum computing</button>
+                </div>
+            </div>
+            <div class="hero-decoration decoration-one"></div>
+            <div class="hero-decoration decoration-two"></div>
+        </section>
+
+        <section class="content-wrap">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow dark-eyebrow">YOUR NEXT DISCOVERY</div>
+                    <h2>Explore research</h2>
+                    <p class="section-subtitle">Refine your search to find the work that matters to you.</p>
+                </div>
+                <div class="result-count" id="result-count">Ready when you are</div>
+            </div>
+
+            <div class="workspace">
+                <aside class="filter-card">
+                    <div class="filter-heading"><h3>Filters</h3><button id="clear-filters" class="text-button">Clear all</button></div>
+                    <div class="filter-group">
+                        <label for="author">Author</label>
+                        <input id="author" type="text" placeholder="e.g. Jane Smith">
+                    </div>
+                    <div class="filter-group">
+                        <label for="category">Research category</label>
+                        <select id="category">
+                            <option value="">All categories</option>
+                            <option value="cs.AI">Artificial Intelligence</option>
+                            <option value="cs.LG">Machine Learning</option>
+                            <option value="cs.CL">Computation & Language</option>
+                            <option value="cs.CV">Computer Vision</option>
+                            <option value="physics">Physics</option>
+                            <option value="q-bio">Quantitative Biology</option>
+                            <option value="econ">Economics</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="date-from">Published from</label>
+                        <input id="date-from" type="date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="date-to">Published to</label>
+                        <input id="date-to" type="date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="sort-by">Sort results</label>
+                        <select id="sort-by">
+                            <option value="relevance">Most relevant</option>
+                            <option value="submittedDate">Newest first</option>
+                            <option value="lastUpdatedDate">Recently updated</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters" class="button button-outline button-full">Apply filters</button>
+                    <div class="filter-note"><span>✳</span><p>Results are retrieved from the arXiv research repository.</p></div>
+                </aside>
+
+                <section class="results-area" aria-live="polite">
+                    <div class="results-toolbar">
+                        <div><span class="small-label">SEARCH RESULTS</span><h3 id="results-title">Start with a research question</h3></div>
+                        <span class="sort-caption">Powered by arXiv</span>
+                    </div>
+                    <div id="results" class="results-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">⌕</div>
+                            <h3>Your next big idea starts here.</h3>
+                            <p>Enter a keyword or research topic above, then use the filters to narrow your results.</p>
+                        </div>
+                    </div>
+                    <div class="pagination">
+                        <button id="load-more" class="button button-outline" hidden>Load more results <span>↓</span></button>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section class="community-section" id="community">
+            <div class="community-inner">
+                <div>
+                    <div class="eyebrow">BE PART OF THE CONVERSATION</div>
+                    <h2>Research is better<br><em>when shared.</em></h2>
+                    <p>Every paper starts a conversation. Open an article to share an observation, ask a question, or learn from other readers.</p>
+                </div>
+                <div class="community-stat">
+                    <span class="stat-symbol">✳</span>
+                    <strong>Read. Reflect. Discuss.</strong>
+                    <span>A space for thoughtful exchange around scholarly work.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <a class="brand footer-brand" href="/"><span class="brand-mark">S</span><span>scholarly<span class="brand-light">insights</span></span></a>
+        <span>Discover knowledge. Share perspective.</span>
+        <span>Research data via arXiv</span>
+    </footer>
+
+    <div id="article-modal" class="modal" aria-hidden="true">
+        <div class="modal-backdrop" data-close-modal></div>
+        <article class="article-dialog" role="dialog" aria-modal="true" aria-labelledby="article-title">
+            <button class="modal-close" data-close-modal aria-label="Close article">×</button>
+            <div id="article-detail"><div class="loading-state">Loading article...</div></div>
+        </article>
+    </div>
+
+    <script type="module" src="/static/firebase-auth.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

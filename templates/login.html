@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | Scholarly Insights</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <a class="brand" href="/">
+            <span class="brand-mark">S</span>
+            <span>scholarly<span class="brand-light">insights</span></span>
+        </a>
+    </header>
+
+    <main class="auth-page">
+        <section class="auth-card">
+            <h1 id="auth-title">Welcome back</h1>
+            <p id="auth-description">
+                Log in to continue your research journey.
+            </p>
+
+            <form id="auth-form">
+                <label for="auth-email">Email</label>
+                <input
+                    id="auth-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="auth-password">Password</label>
+                <input
+                    id="auth-password"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    minlength="6"
+                    required
+                >
+
+                <button
+                    id="auth-submit"
+                    class="button button-primary"
+                    type="submit"
+                >
+                    Log in
+                </button>
+            </form>
+
+            <button id="auth-switch" class="text-button" type="button">
+                Don't have an account? Sign up
+            </button>
+
+            <p id="auth-error" role="alert"></p>
+
+            <a class="auth-back" href="/">← Back to homepage</a>
+        </section>
+    </main>
+
+    <script type="module" src="/static/firebase-auth.js"></script>
+</body>
+</html>
