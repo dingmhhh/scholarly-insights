@@ -38,6 +38,29 @@ const userEmail = document.getElementById("user-email");
 
 let isSignUp = false;
 
+
+async function syncUser(user) {
+  const token = await user.getIdToken();
+
+  const response = await fetch("/auth/sync", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+
+    throw new Error(
+      data.detail || "Failed to sync account with backend"
+    );
+  }
+
+  return response.json();
+}
+
+
 // Update login/sign-up form
 function updateAuthMode() {
   if (!authForm) return;
@@ -97,30 +120,36 @@ if (authForm) {
     authSubmit.disabled = true;
     if (authError) authError.textContent = "";
 
+
     try {
+      let result;
+
       if (isSignUp) {
-        await createUserWithEmailAndPassword(
+        result = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
       } else {
-        await signInWithEmailAndPassword(
+        result = await signInWithEmailAndPassword(
           auth,
           email,
           password
         );
       }
 
-      // Redirect after successful authentication
+      // Synchronize Firebase user with SQLite
+      await syncUser(result.user);
+
+      // Redirect only after successful synchronization
       window.location.href = "/";
 
     } catch (error) {
-      console.error("Firebase authentication failed:", error);
+      console.error("Authentication failed:", error);
 
       if (authError) {
         authError.textContent =
-          error.code || error.message || "Authentication failed.";
+          error.message || "Authentication failed.";
       }
     } finally {
       authSubmit.disabled = false;

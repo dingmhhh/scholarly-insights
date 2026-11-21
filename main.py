@@ -11,11 +11,15 @@ from search import search_articles as run_article_search
 from arxiv_client import fetch_articles
 from database import get_connection, intialize_database
 
+from routers.auth import router as auth_router
+
 app = FastAPI(
     title="Scholarly Insight API",
     description="Backend for scholarly article search and discussion",
     version="0.2.0"
 )
+
+app.include_router(auth_router)
 
 BASE_DIR = Path(__file__).resolve().parent
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")

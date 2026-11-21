@@ -227,3 +227,6 @@ __marimo__/
 
 # macOS
 .DS_Store
+
+secrets/
+.env
