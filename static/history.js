@@ -42,9 +42,38 @@ function createHistoryCard(item) {
     const title = document.createElement("a");
     title.className = "article-title";
     title.textContent = `arXiv:${item.arxiv_id}`;
-    title.href = `https://arxiv.org/abs/${encodeURI(item.arxiv_id)}`;
+    title.href =
+        `https://arxiv.org/abs/${encodeURIComponent(item.arxiv_id)}`;
     title.target = "_blank";
     title.rel = "noopener noreferrer";
+
+    const authors = document.createElement("p");
+    authors.className = "article-authors";
+    authors.textContent = "Loading article details...";
+
+    fetch(`/articles/${encodeURIComponent(item.arxiv_id)}`)
+        .then(async response => {
+            if (!response.ok) {
+                throw new Error(
+                    `Could not load article details (${response.status})`
+                );
+            }
+            return response.json();
+        })
+        .then(article => {
+            title.textContent =
+                article.title || `arXiv:${item.arxiv_id}`;
+            authors.textContent =
+                (article.authors || []).join(", ") ||
+                "Author information unavailable";
+        })
+        .catch(error => {
+            console.error(
+                `Could not load details for ${item.arxiv_id}:`,
+                error
+            );
+            authors.textContent = "Article details unavailable";
+        });
 
     const viewedAt = document.createElement("p");
     viewedAt.className = "article-authors";
@@ -63,6 +92,7 @@ function createHistoryCard(item) {
     actions.appendChild(viewLink);
 
     card.appendChild(title);
+    card.appendChild(authors);
     card.appendChild(viewedAt);
     card.appendChild(actions);
 
