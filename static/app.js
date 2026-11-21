@@ -146,6 +146,120 @@ async function recordReadingHistory(articleId) {
     }
 }
 
+
+async function favoriteRequest(articleId, method = "POST") {
+    if (typeof window.getFirebaseIdToken !== "function") {
+        throw new Error("Please log in first.");
+    }
+
+    const token = await window.getFirebaseIdToken();
+
+    const url = method === "DELETE"
+        ? `/favorites/${encodeURIComponent(articleId)}`
+        : "/favorites";
+
+    const options = {
+        method,
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
+    if (method === "POST") {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify({
+            arxiv_id: articleId
+        });
+    }
+
+    const response = await fetch(url, options);
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(
+            data.detail || "Favorite request failed"
+        );
+    }
+
+    return data;
+}
+
+async function checkFavorite(articleId) {
+    const token = await window.getFirebaseIdToken();
+
+    const response = await fetch(
+        `/favorites/${encodeURIComponent(articleId)}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to check favorite status");
+    }
+
+    return response.json();
+}
+
+
+async function setupFavoriteButton(articleId) {
+    const button = document.getElementById("favorite-btn");
+    if (!button) return;
+
+    button.dataset.articleId = articleId;
+    button.disabled = true;
+    button.textContent = "Loading...";
+
+    let isFavorited = false;
+
+    function updateButton() {
+        button.textContent = isFavorited
+            ? "♥ Saved"
+            : "♡ Save to Favorites";
+    }
+
+    try {
+        const status = await checkFavorite(articleId);
+
+        if (button.dataset.articleId !== articleId) return;
+
+        isFavorited = status.is_favorited;
+        updateButton();
+    } catch (error) {
+        if (button.dataset.articleId !== articleId) return;
+
+        button.textContent = "Log in to save";
+        button.disabled = false;
+    }
+
+    button.disabled = false;
+
+    button.onclick = async () => {
+        button.disabled = true;
+
+        try {
+            if (isFavorited) {
+                await favoriteRequest(articleId, "DELETE");
+                isFavorited = false;
+            } else {
+                await favoriteRequest(articleId, "POST");
+                isFavorited = true;
+            }
+
+            updateButton();
+
+        } catch (error) {
+            alert(error.message);
+
+        } finally {
+            button.disabled = false;
+        }
+    };
+}
+
+
 async function openArticle(articleId) {
     currentArticleId = articleId;
     elements.modal.classList.add("open");
@@ -160,6 +274,7 @@ async function openArticle(articleId) {
 
         // Record history after article details load successfully
         void recordReadingHistory(articleId);
+        void setupFavoriteButton(articleId);
 
         elements.articleDetail.innerHTML = `
             <div class="detail-category">${escapeHtml((article.categories || []).join(" · "))}</div>

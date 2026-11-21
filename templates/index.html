@@ -16,6 +16,7 @@
         <nav class="main-nav">
             <a class="active" href="#discover">Discover</a>
             <a href="/reading-history">Reading History</a>
+            <a href="/saved-articles">Favorites</a>
             <a href="#community">Community</a>
         </nav>
         <div class="auth-controls" aria-label="Account controls">
@@ -147,6 +148,11 @@
         <article class="article-dialog" role="dialog" aria-modal="true" aria-labelledby="article-title">
             <button class="modal-close" data-close-modal aria-label="Close article">×</button>
             <div id="article-detail"><div class="loading-state">Loading article...</div></div>
+            <div class="article-actions">
+                <button id="favorite-btn" type="button">
+                    ♡ Save to Favorites
+                </button>
+            </div>
         </article>
     </div>
 

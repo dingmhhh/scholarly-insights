@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Favorites | Scholarly Insights</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <a class="brand" href="/">
+            <span class="brand-mark">S</span>
+            <span>
+                scholarly<span class="brand-light">insights</span>
+            </span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="/">Discover</a>
+            <a href="/reading-history">Reading History</a>
+            <a href="/saved-articles" class="active">Favorites</a>
+            <a href="#community">Community</a>
+        </nav>
+
+        <div class="header-actions">
+            <a id="login-btn" href="/login" class="header-link" hidden>
+                Log in
+            </a>
+
+            <span id="user-email" hidden></span>
+
+            <button id="logout-btn" type="button" hidden>
+                Log out
+            </button>
+        </div>
+    </header>
+
+    <main class="content-wrap">
+
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow dark-eyebrow">
+                    YOUR RESEARCH LIBRARY
+                </div>
+
+                <h2>My Favorites</h2>
+
+                <p class="section-subtitle">
+                    Keep track of papers you've saved.
+                </p>
+            </div>
+
+            <span id="favorites-count" class="result-count">
+                Loading...
+            </span>
+        </div>
+
+        <section id="favorites-list" class="results-list">
+            <p>Loading your saved articles...</p>
+        </section>
+
+        <div id="favorites-empty" class="empty-state" hidden>
+            <h3>No favorites yet</h3>
+
+            <p>
+                Save articles while exploring research
+                to find them here later.
+            </p>
+
+            <a href="/" class="button button-primary">
+                Explore research
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <span>Discover knowledge. Share perspective.</span>
+        <span>Research data via arXiv</span>
+    </footer>
+
+    <script
+        type="module"
+        src="/static/favorites.js"
+    ></script>
+</body>
+</html>

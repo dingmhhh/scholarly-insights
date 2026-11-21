@@ -353,3 +353,38 @@ h1 em, .community-section h2 em { color: var(--teal); font-weight: 500; }
 .article-title {
     text-decoration: none;
 }
+
+/* Favorites Page */
+
+[hidden] {
+    display: none !important;
+}
+
+.remove-favorite-btn {
+    padding: 9px 16px;
+    border: 1px solid #d5e3dd;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #176b68;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.remove-favorite-btn:hover {
+    background: #e8f1ed;
+}
+
+.remove-favorite-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.article-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 14px;
+}
