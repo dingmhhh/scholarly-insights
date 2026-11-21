@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,24 @@
     <title>Scholarly Insights | Research Discovery</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
     <header class="site-header">
         <a class="brand" href="/" aria-label="Scholarly Insights home">
             <span class="brand-mark">S</span>
             <span>scholarly<span class="brand-light">insights</span></span>
         </a>
+        <!-- <nav class="main-nav">
+            <a class="active" href="#discover">Discover</a>
+            <a href="/reading-history">Reading History</a>
+            <a href="/saved-articles">Favorites</a>
+            <a href="#community">Community</a>
+        </nav> -->
         <nav class="main-nav">
             <a class="active" href="#discover">Discover</a>
             <a href="/reading-history">Reading History</a>
             <a href="/saved-articles">Favorites</a>
+            <a href="#notifications">🔔 Notifications</a>
             <a href="#community">Community</a>
         </nav>
         <div class="auth-controls" aria-label="Account controls">
@@ -34,7 +43,8 @@
             <div class="hero-inner">
                 <div class="eyebrow"><span class="eyebrow-line"></span> THE RESEARCH DISCOVERY PLATFORM</div>
                 <h1>Ideas worth exploring.<br><em>Knowledge worth sharing.</em></h1>
-                <p class="hero-copy">Search millions of scholarly papers, follow emerging ideas, and exchange perspectives with a curious research community.</p>
+                <p class="hero-copy">Search millions of scholarly papers, follow emerging ideas, and exchange
+                    perspectives with a curious research community.</p>
                 <div class="search-panel">
                     <label class="sr-only" for="keyword">Search scholarly articles</label>
                     <span class="search-icon">⌕</span>
@@ -64,7 +74,9 @@
 
             <div class="workspace">
                 <aside class="filter-card">
-                    <div class="filter-heading"><h3>Filters</h3><button id="clear-filters" class="text-button">Clear all</button></div>
+                    <div class="filter-heading">
+                        <h3>Filters</h3><button id="clear-filters" class="text-button">Clear all</button>
+                    </div>
                     <div class="filter-group">
                         <label for="author">Author</label>
                         <input id="author" type="text" placeholder="e.g. Jane Smith">
@@ -99,12 +111,16 @@
                         </select>
                     </div>
                     <button id="apply-filters" class="button button-outline button-full">Apply filters</button>
-                    <div class="filter-note"><span>✳</span><p>Results are retrieved from the arXiv research repository.</p></div>
+                    <div class="filter-note"><span>✳</span>
+                        <p>Results are retrieved from the arXiv research repository.</p>
+                    </div>
                 </aside>
 
                 <section class="results-area" aria-live="polite">
                     <div class="results-toolbar">
-                        <div><span class="small-label">SEARCH RESULTS</span><h3 id="results-title">Start with a research question</h3></div>
+                        <div><span class="small-label">SEARCH RESULTS</span>
+                            <h3 id="results-title">Start with a research question</h3>
+                        </div>
                         <span class="sort-caption">Powered by arXiv</span>
                     </div>
                     <div id="results" class="results-list">
@@ -115,9 +131,50 @@
                         </div>
                     </div>
                     <div class="pagination">
-                        <button id="load-more" class="button button-outline" hidden>Load more results <span>↓</span></button>
+                        <button id="load-more" class="button button-outline" hidden>Load more results
+                            <span>↓</span></button>
                     </div>
                 </section>
+            </div>
+        </section>
+        <!-- Notifications and research category subscriptions -->
+        <section class="content-wrap" id="notifications">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow dark-eyebrow">STAY UPDATED</div>
+                    <h2>🔔 Notifications</h2>
+                    <p class="section-subtitle">
+                        Get notified when new research papers are published.
+                    </p>
+                </div>
+            </div>
+
+            <div class="filter-card">
+                <h3>Subscribe to a research category</h3>
+
+                <select id="alert-category">
+                    <option value="cs.AI">Artificial Intelligence</option>
+                    <option value="cs.LG">Machine Learning</option>
+                    <option value="cs.CR">Cryptography and Security</option>
+                    <option value="cs.CV">Computer Vision</option>
+                </select>
+
+                <button id="subscribe-alert" class="button button-primary">
+                    Subscribe
+                </button>
+
+                <h3>My Subscriptions</h3>
+                <div id="alert-subscriptions"></div>
+            </div>
+
+            <div class="results-area">
+                <h3>Recent Notifications</h3>
+                <button id="refresh-notifications" class="button button-outline">
+                    Refresh Notifications
+                </button>
+                <div id="notification-list" class="results-list">
+                    <p>No notifications yet.</p>
+                </div>
             </div>
         </section>
 
@@ -126,7 +183,8 @@
                 <div>
                     <div class="eyebrow">BE PART OF THE CONVERSATION</div>
                     <h2>Research is better<br><em>when shared.</em></h2>
-                    <p>Every paper starts a conversation. Open an article to share an observation, ask a question, or learn from other readers.</p>
+                    <p>Every paper starts a conversation. Open an article to share an observation, ask a question, or
+                        learn from other readers.</p>
                 </div>
                 <div class="community-stat">
                     <span class="stat-symbol">✳</span>
@@ -138,7 +196,8 @@
     </main>
 
     <footer class="site-footer">
-        <a class="brand footer-brand" href="/"><span class="brand-mark">S</span><span>scholarly<span class="brand-light">insights</span></span></a>
+        <a class="brand footer-brand" href="/"><span class="brand-mark">S</span><span>scholarly<span
+                    class="brand-light">insights</span></span></a>
         <span>Discover knowledge. Share perspective.</span>
         <span>Research data via arXiv</span>
     </footer>
@@ -152,11 +211,14 @@
                     ♡ Save to Favorites
                 </button>
             </div>
-            <div id="article-detail"><div class="loading-state">Loading article...</div></div>
+            <div id="article-detail">
+                <div class="loading-state">Loading article...</div>
+            </div>
         </article>
     </div>
 
     <script type="module" src="/static/firebase-auth.js"></script>
     <script src="/static/app.js"></script>
 </body>
+
 </html>

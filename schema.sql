@@ -38,3 +38,17 @@ CREATE TABLE IF NOT EXISTS discussions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+-- Store notifications for new research papers
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    arxiv_id TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    article_url TEXT NOT NULL,
+    is_read INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    UNIQUE (user_id, arxiv_id)
+);
