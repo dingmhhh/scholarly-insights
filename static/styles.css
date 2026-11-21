@@ -345,3 +345,11 @@ h1 em, .community-section h2 em { color: var(--teal); font-weight: 500; }
         padding: 30px 22px;
     }
 }
+
+[hidden] {
+    display: none !important;
+}
+
+.article-title {
+    text-decoration: none;
+}

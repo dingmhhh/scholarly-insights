@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reading History | Scholarly Insights</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <a class="brand" href="/">
+            <span class="brand-mark">S</span>
+            <span>
+                scholarly<span class="brand-light">insights</span>
+            </span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="/">Discover</a>
+            <a href="/reading-history" class="active">Reading History</a>
+        </nav>
+
+        <div class="header-actions">
+            <a id="login-btn" href="/login" class="header-link">
+                Log in
+            </a>
+
+            <span id="user-email" hidden></span>
+
+            <button id="logout-btn" type="button" hidden>
+                Log out
+            </button>
+        </div>
+    </header>
+
+    <!-- Reading History -->
+    <main class="content-wrap">
+
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow dark-eyebrow">
+                    YOUR RESEARCH JOURNEY
+                </div>
+
+                <h2>Reading History</h2>
+
+                <p class="section-subtitle">
+                    Revisit articles you've explored.
+                </p>
+            </div>
+
+            <span id="history-count" class="result-count">
+                Loading...
+            </span>
+        </div>
+
+        <!-- History List -->
+        <section id="history-list" class="results-list">
+            <div class="loading-state">
+                Loading your reading history...
+            </div>
+        </section>
+
+        <!-- Empty State -->
+        <div id="history-empty" class="empty-state" hidden>
+            <div class="empty-icon">⌕</div>
+
+            <h3>No reading history yet</h3>
+
+            <p>
+                Articles you open will appear here.
+            </p>
+
+            <a href="/" class="button button-primary">
+                Explore research →
+            </a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <span>Discover knowledge. Share perspective.</span>
+        <span>Research data via arXiv</span>
+    </footer>
+
+    <!-- Firebase Authentication -->
+    <script
+        type="module"
+        src="/static/firebase-auth.js"
+    ></script>
+
+    <!-- Reading History Logic -->
+    <script
+        type="module"
+        src="/static/history.js"
+    ></script>
+
+</body>
+</html>

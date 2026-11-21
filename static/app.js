@@ -108,6 +108,44 @@ function renderArticleCard(article) {
         </article>`;
 }
 
+
+async function recordReadingHistory(articleId) {
+    if (typeof window.getFirebaseIdToken !== "function") {
+        return;
+    }
+
+    let token;
+
+    try {
+        token = await window.getFirebaseIdToken();
+    } catch {
+        // User is not logged in.
+        return;
+    }
+
+    try {
+        const response = await fetch("/history", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                arxiv_id: articleId
+            })
+        });
+
+        if (!response.ok) {
+            console.warn(
+                "Could not record reading history:",
+                response.status
+            );
+        }
+    } catch (error) {
+        console.warn("Reading history unavailable:", error);
+    }
+}
+
 async function openArticle(articleId) {
     currentArticleId = articleId;
     elements.modal.classList.add("open");
@@ -119,6 +157,9 @@ async function openArticle(articleId) {
         const response = await fetch(`${API_BASE}/articles/${encodeURIComponent(articleId)}`);
         const article = await response.json();
         if (!response.ok) throw new Error(article.detail || "Article could not be loaded.");
+
+        // Record history after article details load successfully
+        void recordReadingHistory(articleId);
 
         elements.articleDetail.innerHTML = `
             <div class="detail-category">${escapeHtml((article.categories || []).join(" · "))}</div>

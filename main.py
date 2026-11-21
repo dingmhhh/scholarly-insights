@@ -12,6 +12,7 @@ from arxiv_client import fetch_articles
 from database import get_connection, intialize_database
 
 from routers.auth import router as auth_router
+from routers.history import router as history_router
 
 app = FastAPI(
     title="Scholarly Insight API",
@@ -20,6 +21,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.include_router(history_router)
 
 BASE_DIR = Path(__file__).resolve().parent
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
@@ -43,6 +45,12 @@ def home():
 @app.get("/login")
 def login_page():
     return FileResponse(BASE_DIR / "templates" / "login.html")
+
+@app.get("/reading-history", include_in_schema=False)
+def history_page():
+    return FileResponse(
+        BASE_DIR / "templates" / "history.html"
+    )
 
 @app.get("/health")
 def health_check():
