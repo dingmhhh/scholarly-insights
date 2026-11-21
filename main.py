@@ -14,6 +14,7 @@ from database import get_connection, intialize_database
 from routers.auth import router as auth_router
 from routers.history import router as history_router
 from routers.favorites import router as favorites_router
+from routers.alerts import router as alerts_router
 
 app = FastAPI(
     title="Scholarly Insight API",
@@ -24,6 +25,7 @@ app = FastAPI(
 app.include_router(auth_router)
 app.include_router(history_router)
 app.include_router(favorites_router)
+app.include_router(alerts_router)
 
 BASE_DIR = Path(__file__).resolve().parent
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")

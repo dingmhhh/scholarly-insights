@@ -1,7 +1,8 @@
-
 import requests
 import xml.etree.ElementTree as ET
 import re
+
+
 
 ARXIV_API_URL = "https://export.arxiv.org/api/query"
 
@@ -53,7 +54,7 @@ def parse_arxiv_response(xml_content):
             "title": " ".join(title.split()),
             "authors": authors,
             "abstract": " ".join(abstract.split()),
-            "published": published[:10],
+            "published": published,
             "categories": categories,
             "pdf_url": pdf_url,
             "article_url": article_url
@@ -99,3 +100,4 @@ if __name__ == "__main__":
 
     for article in result["articles"]:
         print(article["title"])
+

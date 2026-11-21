@@ -21,6 +21,27 @@ const elements = {
     articleDetail: document.getElementById("article-detail")
 };
 
+// Send authenticated requests to our FastAPI backend
+async function alertRequest(url, options = {}) {
+    const token = await window.getFirebaseIdToken();
+
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.detail || "Request failed");
+    }
+
+    return data;
+}
+
 function escapeHtml(value = "") {
     return String(value).replace(/[&<>"']/g, character => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
@@ -399,4 +420,165 @@ document.addEventListener("keydown", event => {
 });
 elements.articleDetail.addEventListener("submit", event => {
     if (event.target.id === "discussion-form") submitDiscussion(event);
+});
+
+// Subscribe to a research category
+document.getElementById("subscribe-alert").addEventListener("click", async () => {
+    const category = document.getElementById("alert-category").value;
+
+    try {
+        const data = await alertRequest("/alerts", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ category })
+        });
+
+        alert(data.message);
+        await loadSubscriptions();
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+
+// Load and display the user's subscribed categories
+async function loadSubscriptions() {
+    const container = document.getElementById("alert-subscriptions");
+
+    try {
+        const data = await alertRequest("/alerts");
+
+        if (data.alerts.length === 0) {
+            container.textContent = "No subscriptions yet.";
+            return;
+        }
+
+        container.innerHTML = data.alerts.map(alert => `
+            <div class="subscription-item">
+                <span>${escapeHtml(alert.category)}</span>
+                <button class="button button-outline"
+                        data-alert-id="${alert.alert_id}">
+                    Unsubscribe
+                </button>
+            </div>
+        `).join("");
+
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+// Load subscriptions and saved notifications when the user opens Notifications
+document.querySelector('a[href="#notifications"]').addEventListener("click", () => {
+    loadSubscriptions();
+    loadNotifications();
+});
+
+// Unsubscribe from a research category
+document.getElementById("alert-subscriptions").addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-alert-id]");
+
+    if (!button) return;
+
+    const alertId = button.dataset.alertId;
+
+    button.disabled = true;
+
+    try {
+        await alertRequest(`/alerts/${alertId}`, {
+            method: "DELETE"
+        });
+
+        // Refresh the subscriptions after removing one
+        await loadSubscriptions();
+
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+    }
+});
+
+// Load and display research paper notifications
+async function loadNotifications() {
+    const container = document.getElementById("notification-list");
+
+    try {
+        const data = await alertRequest("/alerts/notifications");
+
+        if (data.notifications.length === 0) {
+            container.textContent = "No notifications yet.";
+            return;
+        }
+
+        container.innerHTML = data.notifications.map(notification => `
+            <div class="article-card">
+                <span class="category-tag">
+                    ${escapeHtml(notification.category)}
+                </span>
+
+                <h3>${escapeHtml(notification.title)}</h3>
+
+                <p>${notification.is_read ? "Read" : "Unread"}</p>
+
+                ${!notification.is_read ? `
+    <button class="button button-outline"
+            data-notification-id="${notification.notification_id}">
+        Mark as Read
+    </button>
+` : ""}
+            </div>
+        `).join("");
+
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+// Check for new papers and refresh notifications
+document.getElementById("refresh-notifications").addEventListener("click", async () => {
+    const button = document.getElementById("refresh-notifications");
+
+    button.disabled = true;
+    button.textContent = "Checking for new papers...";
+
+    try {
+        // Find new papers in subscribed categories
+        await alertRequest("/alerts/new-publications");
+
+        // Display saved notifications
+        await loadNotifications();
+
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        button.disabled = false;
+        button.textContent = "Refresh Notifications";
+    }
+});
+
+// Mark a research notification as read
+document.getElementById("notification-list").addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-notification-id]");
+
+    if (!button) return;
+
+    const notificationId = button.dataset.notificationId;
+
+    button.disabled = true;
+
+    try {
+        // Update the notification's read status in the database
+        await alertRequest(`/alerts/notifications/${notificationId}/read`, {
+            method: "PATCH"
+        });
+
+        // Refresh the displayed notifications
+        await loadNotifications();
+
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+    }
 });
